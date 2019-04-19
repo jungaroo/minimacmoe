@@ -1,81 +1,53 @@
 $(function() {
   const $board = $("#board");
   const $button = $(".btn");
+  const $fight = $("#fight");
+  const $game = $("#game");
 
+  const [HUMAN, ROBOT] = ['X', 'O'];
 
-  let human = new Human('O');
-  let robot = new Robot('X');
-  let game = new TicTacToe(human, robot);
+  let game = new TicTacToe(HUMAN, ROBOT);
+  
+  $fight.on("click", function() {
+    $game.slideToggle();
+  })
+  $board.on("click", ".square", async function() {
+    let idx = $(this).index();
+ 
+    if (!game.hasNotPlayed(idx)) return; // Already played
+  
+    // Process that human played
+    game.markPlayed(idx, HUMAN);
+    updateUIPlay(idx, HUMAN);
+    toggleButtons();
+    
+    // Get robot's play
+    let {robot_move} = await playToServer(idx);
+    game.markPlayed(robot_move, ROBOT);
+    setTimeout(() => {
+      updateUIPlay(robot_move, ROBOT);
+    }, 100);
 
-  $board.on("click", ".button", function() {
-    let col = $(this).index();
-    let row = $(this).parent().index();
-
-    if (game.hasNotPlayed(row, col)) {
-      game.play(row, col, human);
-      updatePlay(row, col, human);
-      console.log(game.getAvailablePositions());
-      toggleButtons();
-
-      if (game.checkForWin()) {
-        alert("You won!");
-        return;
-      } else if (game.isTied()) {
-        alert("Tied!");
-        return;
-      }
-
-      let [r, c] = game.computerPlays(row, col);
-      console.log("Robot plays at", r, c);
-      updatePlay(r, c, robot);
-
-      if (game.checkForWin()) {
-        alert("You lost!");
-        return;
-      }
-
-      toggleButtons();
-      
-
+    // Check for wins
+    if (game.checkForWin(ROBOT)) {
+      setTimeout( ()=> alert("Pwned") , 300);
     } else {
-      console.log("rejected", row, col);
+      toggleButtons();
     }
 
   });
 
-  function updatePlay(row, col, player) {
-    $board.children(`:nth-child(${row+1})`).children(`:nth-child(${col+1})`).text(player.symbol); ;
+  function updateUIPlay(idx, player) {
+    $board.children(`:nth-child(${idx+1})`).text(player); ;
   }
 
   function toggleButtons() {
     $button.toggleClass("button");
   }
 
-
-  let gameTree = new GameTree(game.board, 0);
-  
-  function populateGameTree(root) {
-
-    if (game.checkForWin(root.board)) {
-      return;
-    }
-    if (root.board.every(isNaN)) {
-      return;
-    }
-    for (position of game.getAvailablePositions(root.board)) {
-      let copyBoard = [...root.board];
-      let depth = root.depth + 1;
-      copyBoard[position] = (depth % 2 == 0) ? 'O' : 'X';
-      root.addPosition(position);
-      root.addChild(copyBoard);
-    }
-
-    for (child of root.children) {
-      populateGameTree(child);
-    }
+  async function playToServer(player_move) {
+    let response = $.post('/move', {player_move});
+    return response;
   }
-
-  populateGameTree(gameTree);
-  console.log("Done iwth game tree.", gameTree);
   
 });
