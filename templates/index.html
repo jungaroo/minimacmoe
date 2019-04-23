@@ -1,47 +1,53 @@
 {% extends 'base.html' %}
 
-{% block robot %}
+{% block opponent1 %}
+
   <div class="robot-container">
     <div class="card">
       <img class="card-img-top" src="https://www.bing.com/th?id=OIP.cf-cHx0zUsypP9BHE8T6DwHaEK&pid=Api&rs=1&p=0" alt="You can't beat me!">
       <div class="card-body">
         <h5 class="card-title">Minnie Mac Moe</h5>
         <p class="card-text text-center">YOU CAN'T BEAT ME</p>
-        <a id="fight" class="btn btn-danger">Fight me</a>
+        <button class="fight btn btn-danger">Fight me</button>
         <a href="#" class="btn btn-info">Info</a>
       </div>
     </div>
   </div>
-
-  <!-- <div class="robot-container">
+  {% endblock %}
+  
+  {% block opponent2 %}
+  <div class="robot-container">
     <div class="card">
       <img class="card-img-top" src="https://www.bing.com/th?id=OIP.Yvl6zE4WWu5ehqdftQuXIwHaF8&w=260&h=208&c=7&o=5&dpr=2.2&pid=1.7" alt="You can't beat me!">
       <div class="card-body">
-        <h5 class="card-title">Dumbo Jumbo</h5>
+        <h5 class="card-title">Dumbotron</h5>
         <p class="card-text text-center">YOU CAN'T MAKE ME WIN</p>
-        <a id="fightme" class="btn btn-danger">Fight me</a>
+        <button class="fight btn btn-danger">Fight me</button>
         <a href="#" class="btn btn-info">Info</a>
       </div>
     </div>
-  </div> -->
-{% endblock %}
+  </div>
+  {% endblock %}
 
 {% block board %}
-<div id="game">
-  <div class="grid-container">
-    <div id="board">
-      <div class="square"></div>
-      <div class="square v"></div>
-      <div class="square"></div>
-      
-      <div class="square h"></div>
-      <div class="square v h"></div>
-      <div class="square h"></div>
-
-      <div class="square"></div>
-      <div class="square v"></div>
-      <div class="square"></div>
-    </div>
+  <div id="game">
+      <div class="grid-container">
+        <div id="board">
+          <div class="square"></div>
+          <div class="square v"></div>
+          <div class="square"></div>
+          
+          <div class="square h"></div>
+          <div class="square v h"></div>
+          <div class="square h"></div>
+    
+          <div class="square"></div>
+          <div class="square v"></div>
+          <div class="square"></div>
+        </div>
+      </div>
   </div>
-</div>
 {% endblock %}
+
+
+

@@ -7,39 +7,58 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = "oh-so-secret"
 
 debug = DebugToolbarExtension(app)
-currentNode = robot.root
+CURRENT_NODE = robot.root
 
 @app.route("/")
 def home():
-  global currentNode
-  currentNode = robot.root
+  """Routing for the home page. """
+  
+  # Refresh the CURRENT_NODE to be back 
+  global CURRENT_NODE
+  CURRENT_NODE = robot.root
   return render_template("index.html")
 
-@app.route("/move", methods=["POST"])
-def player():
-  player_move = int(request.form['player_move'])
-  move = getRobotPlay(player_move)
-  return jsonify({"robot_move": move})
-  
-def getRobotPlay(player_move):
-  global currentNode
 
-  # Process player's move
-  print("Player plays:", player_move)
-  print("Here are the valid moves:", [child.move for child in currentNode.children])
-  for i, child in enumerate(currentNode.children):
-    if child.move == player_move:
-      currentNode = currentNode.children[i]
-      break
+@app.route("/move", methods=["POST"])
+def move():
+  """Routing to receive the human's move """
+
+  human_move = int(request.form['human_move'])
+  process_move(human_move)
+  robot_move = getRobotPlay(human_move)
+  process_move(robot_move)
+  return jsonify({"robot_move": robot_move})
   
-  computer_move = currentNode.max_move 
-  print("Robot plays:", computer_move)
-  # Process our move
-  for i, child in enumerate(currentNode.children):
-    if child.move == computer_move:
-      currentNode = currentNode.children[i]
-  print("Here are the valid moves:", [child.move for child in currentNode.children])
+def getRobotPlay(human_move, minnie=True):
+  """Gets a player move and returns the move the robot will play.
+  
+  human_move -- An int (0 - 8), for which position the human played
+  computer_move -- An int (0 - 8), for computer's play in response
+  minnie -- A boolean (default True) if you want to play against Minnie (the smart robot)
+  
+  """
+  
+  global CURRENT_NODE
+
+  process_move(human_move)
+  if minnie:
+    computer_move = CURRENT_NODE.max_move 
+  else:
+    computer_move = CURRENT_NODE.min_move
+
+  process_move(computer_move)
 
   return computer_move
 
-    
+
+def process_move(move):
+  """Updates the global CURRENT_NODE when the move is played. 
+
+  move -- An int (0-8) specifying the move either the robot or human played.
+  """
+  global CURRENT_NODE
+
+  for i, child in enumerate(CURRENT_NODE.children):
+    if child.move == move:
+      CURRENT_NODE = CURRENT_NODE.children[i]
+      break
