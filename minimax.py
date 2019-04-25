@@ -48,7 +48,7 @@ def load_minimax_tree_from_pickle():
     print("Done loading")
     return robot
 
-# robot = load_minimax_tree_from_pickle()
-robot = GameTree(move=None, grid=['X','X','X','O','O','O','X',7,8])
+robot = load_minimax_tree_from_pickle()
+# robot = GameTree(move=None, grid=['X','X','X','O','O',,'X',7,8])
 
 

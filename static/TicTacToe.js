@@ -19,6 +19,9 @@ class TicTacToe {
 
     this.checkForWin = this.checkForWin.bind(this);
     this.isTied = this.isTied.bind(this);
+
+    //Is ended:
+    this.gameOver = false;
   }
 
   /** Returns whether or not someone has played at this position.
@@ -60,5 +63,9 @@ class TicTacToe {
   getAvailable() {
     let avails = this.board.filter((item)=>!isNaN(item));
     return avails;
+  }
+
+  end() {
+    this.gameOver = true;
   }
 }
