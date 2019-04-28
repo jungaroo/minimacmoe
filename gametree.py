@@ -5,11 +5,23 @@ HUMAN_X = 'X'
 
 class GameTree:
     """Class to represent the entire game tree of 9! moves """
-    def __init__(self, move, grid):
-        self.root = GameNode(move=move, grid=grid)
-        GameTree._populate_game_tree(self.root)
+    
+    def __init__(self, root: 'GameNode'):
+        self.root = root
 
-    @staticmethod  # Private
+    @classmethod
+    def create_game_tree(cls, grid=None):
+        """Class method to create the gametree from the passed in grid as the root. """
+        
+        if grid is None:
+            grid = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+        root = GameNode(move=None, grid=grid)
+        tree = cls(root)
+        tree._populate_game_tree(tree.root)
+        return tree
+
+    @staticmethod  #
     def _populate_game_tree(curr: 'GameNode'):
         """ Builds the entire game tree """
         if curr.player_won(ROBOT_O):
@@ -23,13 +35,13 @@ class GameTree:
         else:
             # Create all the children (all moves)
             for move in curr.get_available_positions():
-                next_grid = curr.make_move(move)
-                child = GameNode(move=move, grid=next_grid, children=[], depth=curr.depth+1)
-                curr.children.append(child)
+                child = GameNode.make_next_move_node(curr, move)
+                curr.children[move] = child
+                GameTree._populate_game_tree(child)
 
-            # Populate the rest of the children
-            for child_node in curr.children:
-                GameTree._populate_game_tree(child_node)
+            # # Populate the rest of the children
+            # for child_node in curr.children:
+            #     GameTree._populate_game_tree(child_node)
 
 class GameNode:
     """GameNode for minimax functions """
@@ -49,7 +61,7 @@ class GameNode:
         self.move = move # Move played to get to this spot 
         
         self.grid = grid # [0, 1, 2 ... 8]
-        self.children = children if children else []
+        self.children = children if children else {}
         self.depth = depth # Also the turn count
 
         # Minimax moves
@@ -59,46 +71,63 @@ class GameNode:
     def player_won(self, player):
         """Returns whether the player won """
 
-        def three_in_a_row(indices): return all(
-            self.grid[i] == player for i in indices)
+        three_in_a_row = lambda indices : all(self.grid[i] == player for i in indices)
+
         return any(three_in_a_row(indices) for indices in GameNode.win_positions)
 
     def about_to_win(self, player):
         """Returns whether someone is about to win """
-        def score(
-            spot): return GameNode.mark_score[spot] if spot in mark_score else 0
+        
+        get_score = lambda spot : GameNode.mark_score[spot] if spot in GameNode.mark_score else 0
 
         def two_and_free(indices):
             """Player wins if it sums to 2, robot wins if it sums to -2 """
-            total_score = sum([score(self.grid[i]) for i in indices])
-            return abs(total_score) == 2
+            total_score = sum(get_score(self.grid[i]) for i in indices)
+            return total_score == 2 * GameNode.mark_score[player] # -2 if robot, +2 if human
 
-        return any(two_and_free(indices) for indices in win_positions)
+        return any(two_and_free(indices) for indices in GameNode.win_positions)
 
     def is_leaf(self):
+        """Returns whether a node is a leaf node without any children """
+
         return not self.children 
 
     def is_tied(self):
-        return all(type(pos) != int for pos in self.grid)
+        """ Returns whether a board is a tie or not """
+
+        robot_won = self.player_won(ROBOT_O)
+        human_won = self.player_won(HUMAN_X)
+        board_is_filled = all(type(pos) != int for pos in self.grid)
+        # Neither player/robot won and board is full
+        return not (robot_won or human_won) and board_is_filled
 
     def set_score(self, score):
+        """Sets the score for that node """
+        
         self.score = score
 
+
     def get_available_positions(self):
+        """Returns all the available positions that can be played as a list """
+
         return [position for position in self.grid if position not in ['O', 'X']]
 
-    def make_move(self, move):
-        next_grid = self.grid[:]
-        assert type(next_grid[move]) == int, "That move is not valid"
-        next_grid[move] = ROBOT_O if self.depth % 2 == 1 else HUMAN_X
-        return next_grid
+    @classmethod
+    def make_next_move_node(cls, current_node, move):
+        """Makes a move on that board, returning the new GameNode based off that move """
+
+        next_grid = current_node.grid[:]
+        next_grid[move] = ROBOT_O if current_node.depth % 2 == 1 else HUMAN_X
+        return cls(move=move, grid=next_grid, depth=current_node.depth + 1)
 
     def __str__(self):
         """User friendly print of the board """
+
         b = self.grid
         board = f"""{b[0]} {b[1]} {b[2]}\n{b[3]} {b[4]} {b[5]}\n{b[6]} {b[7]} {b[8]}"""
         return f"{board}\n c={len(self.children)}"
 
     def __repr__(self):
-        """Literally what is is. """
+        """Object information representation """
+
         return f"<GameNode @ {self.grid}. Depth: {self.depth}>"
