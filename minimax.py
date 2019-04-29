@@ -24,14 +24,29 @@ def minimax(node):
         return score
 
 
-PICKLE_FILE = "gametree.obj"
-
 def build_minimax_tree():
     """Function to be only run once, in order to build the full minimax tree. """
     grid = list(range(9))
     tree = GameTree.create_game_tree(grid)
     minimax(tree.root)
     return tree
+
+def prune(tree_node):
+    """Runs once, will remove all children that is not the max or min move for
+    the moves that are on the robot's turn. """
+    
+    if tree_node.depth % 2 == 1: # robot's turn
+        important = [tree_node.max_move, tree_node.min_move]
+        keys = list(tree_node.children.keys())
+        for i in keys:
+            if i not in important:
+                del tree_node.children[i]
+    
+    for children in tree_node.children.values():
+        prune(children)
+    
+
+
 
 def save_minimax_tree_to_pickle(tree):
     """Saves the tree to a pickle file """
@@ -48,6 +63,7 @@ def load_minimax_tree_from_pickle():
     print("Done loading")
     return robot
 
+PICKLE_FILE = "gametree_prune.obj"
 
 if __name__ == "__main__":
 
@@ -60,7 +76,9 @@ if __name__ == "__main__":
         
         print("Beginning to build the tree... ")
         tree = build_minimax_tree()
-        print("Done building! Now saving...")
+        print("Done builing! Starting the prune")
+        prune(tree.root)
+        print("Done pruning! Now saving...")
         save_minimax_tree_to_pickle(tree)
     else:
         import sys
