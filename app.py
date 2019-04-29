@@ -5,9 +5,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from tictactoerobot import TicTacToeRobot
 from random import choice
 import json
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "oh-so-secret"
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "oh-super-secret")
 debug = DebugToolbarExtension(app)
 
 HUMAN = 'X'
