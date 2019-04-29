@@ -9,6 +9,7 @@ class TicTacToe {
   */
   constructor(human, robot) {
     this.board = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // Indices of the 3x3 
+    this.history = [] // history of the game
     
     // Strings for the symbols for human and count
     this.human = human; 
@@ -20,7 +21,7 @@ class TicTacToe {
     this.checkForWin = this.checkForWin.bind(this);
     this.isTied = this.isTied.bind(this);
 
-    //Is ended:
+    // Is ended:
     this.gameOver = false;
   }
 
@@ -39,10 +40,11 @@ class TicTacToe {
    */
   markPlayed(index, player) {
     this.board[index] = player;
+    this.history.push(index);
     this.turnCount++;
   }
 
-  /** Checks the board for the winner.
+  /** Checks the board for the winner. Returns the winning position if true, else returns false
    * @params
    * winner: string of either 'X' or 'O'
    */
@@ -51,13 +53,18 @@ class TicTacToe {
     let winPositions = [[0,1,2], [3,4,5], [6,7,8],  // row wins
                         [0,3,6], [1,4,7], [2,5,8],  // column wins
                         [0,4,8], [2,4,6]] // diagonal wins
-                            
-    return winPositions.some(positions => positions.every((i) => this.board[i] === winner));
+    
+    for (let positions of winPositions) {
+      if (positions.every((i) => this.board[i] === winner)) {
+        return positions;
+      }
+    }
+    return false;
   
   }
 
   isTied() {
-    return this.turnCount === 9;
+    return this.turnCount >= 9;
   }
 
   getAvailable() {
@@ -68,4 +75,5 @@ class TicTacToe {
   end() {
     this.gameOver = true;
   }
+
 }

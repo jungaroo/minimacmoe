@@ -1,4 +1,4 @@
-$( function() {
+$(function () {
 
   // Cache common buttons
   const $board = $("#board");
@@ -6,83 +6,107 @@ $( function() {
   const $game = $("#game");
   const $mmmImage = $("#mmm-image");
   const $trashTalk = $("#trash-talk");
+  const $squares = $(".square");
 
   // Global positioning constants
   const [HUMAN, ROBOT] = ['X', 'O'];
-  const TRASH_TALK = [
-    "....",
-    "HAHAHA",
-    "What kinda move is that?",
-    "Oh, you're in big trouble",
-    "WHAT IS THAT",
-    "hmmm....",
-    "WOW!",
+  const RANDOM_MESSAGES = [
+    "O_o",
+    ":-]",
+    "HAHAHA!",
+    "uhhhhh...",
+    "PFFFFT!",
+    "AAAAAAAAAAAAAHHHH",
+    "durrrrr",
     "LOOOOOSERR"
-  ]
+  ];
+
+  let GAME_STARTED = false;
 
   let game = new TicTacToe(HUMAN, ROBOT);
-  
+
   // Event listeners
-  $cardBody.on("click", ".fight", function() {
-    $game.slideToggle();
+  $cardBody.on("click", ".fight", function () {
+    if (!GAME_STARTED) { // Start if not started
+      $game.slideToggle();
+      GAME_STARTED = true;
+      $(this).text("Restart");
+    } else { // Restart if did
+      window.location.reload();
+    }
   })
 
+
   // Sending over a move to the server.
-  $board.on("click", ".square", async function() {
-    
+  $board.on("click", ".square", async function () {
+
     // Check if the move is playable
     let idx = $(this).index();
     if (!game.hasNotPlayed(idx) || game.gameOver) return;
-  
-    // Process that human played
-    game.markPlayed(idx, HUMAN);
-    updateUIPlay(idx, HUMAN);
-    console.log("You play:", idx);
 
-    let response = await playToServer(idx, "minnie")
+    // Send the move to server, with the game history for validation
+    let response = await playToServer(idx, game.history)
+
     if (response.robot_move !== undefined) {
-      console.log("Robot: ", response.robot_move)
+
+      game.markPlayed(idx, HUMAN);
+      updateUIPlay(idx, HUMAN);
+
       game.markPlayed(response.robot_move, ROBOT);
       updateUIPlay(response.robot_move, ROBOT);
     } else {
-      console.log("server didn't get a robot move");
-      console.log(response);
+      window.location.reload();
     }
 
-    if (response.winner) {
+    let winningPositions = game.checkForWin(ROBOT);
+    if (winningPositions) {
+      highlightWin(winningPositions);
+      endGame();
+    } else if (game.isTied()) {
       endGame();
     }
-    
+
   });
 
   /** Updates the UI for play */
   function updateUIPlay(idx, player) {
 
     let mark = (player === 'X') ? "../static/img/X.png" : "../static/img/O.png";
-    $board.children(`:nth-child(${idx+1})`).html($(`<img src="${mark}">`)); 
+    $board.children(`:nth-child(${idx + 1})`).html($(`<img src="${mark}">`));
 
     if (player === 'X') {
-      let n = Math.floor(Math.random() * 8 + 1);
+      let n = Math.floor(Math.random() * 6);
       $mmmImage.attr('src', `../static/img/minmacmoe/mmm${n}.PNG`);
-      $trashTalk.text(TRASH_TALK[n-1]);
+      $trashTalk.text(RANDOM_MESSAGES[n]);
     }
   }
 
 
   /** Sends a play to server */
-  async function playToServer(human_move, option) {
+  async function playToServer(human_move, client_history) {
 
-    let response = await $.post('/move', {
-      human_move : human_move,
-      option : option
-    });
+    let data = {
+      human_move: human_move,
+      client_history: JSON.stringify(client_history)
+    }
+    let response = await $.post('/move', data);
     return response;
   }
 
   function endGame() {
     $mmmImage.attr('src', `../static/img/minmacmoe/loser.PNG`);
+    $trashTalk.text(RANDOM_MESSAGES[7]);
     game.gameOver = true;
   }
 
-  
+  function highlightWin(winningPositions) {
+    // Find out win position
+    console.log(winningPositions);
+    for (let i of winningPositions) {
+      $squares.eq(i).css("background-color", "red");
+    }
+
+  }
+
+
 });

@@ -1,4 +1,4 @@
-#! ./venv/bin/python
+#! ../venv/bin/python
 
 import unittest
 from gametree import ROBOT_O, HUMAN_X
@@ -14,6 +14,7 @@ class TestGameNodeMethods(unittest.TestCase):
         board1 = ['X', 'X', 'X',
                   'O', 'O', 5,
                   6, 'O', 8]
+                  
         board1_node = GameNode(move=None, grid=board1)
         self.assertTrue(board1_node.player_won(HUMAN_X))
         self.assertFalse(board1_node.player_won(ROBOT_O))

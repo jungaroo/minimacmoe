@@ -4,16 +4,16 @@ import pickle
 
 
 def minimax(node):
-    """minimax"""
+    """Minimax algorithm. Store both min and move for every level for two versions of the robot. """
     if node.score is not None:  # hit a leaf
         return node.score
     else:
-        scores = [minimax(child) for child in node.children]
+        scores = [minimax(child) for child in node.children.values()]
 
         min_score = min(scores)
         max_score = max(scores)
 
-        moves = node.getAvailablePositions()
+        moves = node.get_available_positions()
         node.min_move = moves[np.argmin(scores)]
         node.max_move = moves[np.argmax(scores)]
     
@@ -29,7 +29,7 @@ PICKLE_FILE = "gametree.obj"
 def build_minimax_tree():
     """Function to be only run once, in order to build the full minimax tree. """
     grid = list(range(9))
-    tree = GameTree(move=None, grid=grid)
+    tree = GameTree.create_game_tree(grid)
     minimax(tree.root)
     return tree
 
@@ -39,7 +39,7 @@ def save_minimax_tree_to_pickle(tree):
     with open(PICKLE_FILE, "wb") as pickle_file:
         pickle.dump(tree, pickle_file, pickle.HIGHEST_PROTOCOL) 
     
-    print("Done dumping")
+    print(f"Done dumping to '{PICKLE_FILE}'")
 
 def load_minimax_tree_from_pickle():
     """Loads the minimax tree from the pickle file"""
@@ -48,7 +48,23 @@ def load_minimax_tree_from_pickle():
     print("Done loading")
     return robot
 
-robot = load_minimax_tree_from_pickle()
-# robot = GameTree(move=None, grid=['X','X','X','O','O',,'X',7,8])
+
+if __name__ == "__main__":
+
+    print("Attempting to rebuild the gametree from beginning. ")
+    answer = input("Would you like to overwrite the current pickle file? [y/n]")
+    while answer not in 'yn':
+        input("Would you like to overwrite the current pickle file? [y/n]")
+    
+    if answer == 'y':
+        
+        print("Beginning to build the tree... ")
+        tree = build_minimax_tree()
+        print("Done building! Now saving...")
+        save_minimax_tree_to_pickle(tree)
+    else:
+        import sys
+        sys.exit()
+
 
 
