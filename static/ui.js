@@ -101,7 +101,6 @@ $(function () {
 
   function highlightWin(winningPositions) {
     // Find out win position
-    console.log(winningPositions);
     for (let i of winningPositions) {
       $squares.eq(i).css("background-color", "red");
     }
