@@ -2,6 +2,8 @@ import numpy as np
 from gametree import GameTree, GameNode
 import pickle
 
+PICKLE_FILE = "./tree_pickles/gametree_prune.obj"
+
 
 def minimax(node):
     """Minimax algorithm. Store both min and move for every level for two versions of the robot. """
@@ -63,8 +65,6 @@ def load_minimax_tree_from_pickle():
         robot = pickle.load(pickle_file) 
     print("Done loading")
     return robot
-
-PICKLE_FILE = "gametree_prune.obj"
 
 if __name__ == "__main__":
 
