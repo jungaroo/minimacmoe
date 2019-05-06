@@ -1,4 +1,4 @@
-#! ../venv/bin/python
+#! ./venv/bin/python
 
 import unittest
 from gametree import ROBOT_O, HUMAN_X

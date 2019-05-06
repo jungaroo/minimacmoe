@@ -33,7 +33,8 @@ def build_minimax_tree():
 
 def prune(tree_node):
     """Runs once, will remove all children that is not the max or min move for
-    the moves that are on the robot's turn. """
+    the moves that are on the robot's turn. 
+    It is 32x smaller """
     
     if tree_node.depth % 2 == 1: # robot's turn
         important = [tree_node.max_move, tree_node.min_move]

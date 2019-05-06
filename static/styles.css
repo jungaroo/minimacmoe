@@ -1,9 +1,5 @@
 body {
-  background-color: black;
-}
-
-#game {
-  display: none;
+  background: url("https://opengameart.org/sites/default/files/seamless%20space_0.PNG");
 }
 
 
@@ -14,6 +10,7 @@ body {
   color: white;
 }
 
+/** Cards */
 .card {
   background-clip: content-box; /* <---- */
   box-shadow: inset 0 0 0 5px white; /* <-- 10px spread radius */
@@ -21,15 +18,18 @@ body {
   color: white;
 }
 
+/* Mini Mac's profile image */
 .card-img-top {
   height: 300px;
   width: 250px;
 }
 
+/** Grid for the card || board || chat */
 .side-grid {
   display: grid;
-  grid-template-columns: 250px 400px;
+  grid-template-columns: 250px 350px 1100px;
 }
+
 /** ######## Grid ####### */
 .grid-container, .robot-container {
   display: grid;
@@ -40,8 +40,8 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 100px);
   grid-template-rows: repeat(3, 100px);
-  grid-gap: 10px 10px;
-  background-color: white;
+  background: url("https://images.freecreatives.com/wp-content/uploads/2016/02/Seamless-Dark-Wood-Background.jpg");
+  /* background-color: white; */
   border: 3px solid rgb(61.6%, 31.8%, 2.8%);
 }
 
@@ -67,4 +67,9 @@ body {
 #robot {
   height: 150px;
   width: 150px;
+}
+
+.restart {
+  position: relative;
+  left: 40%;
 }

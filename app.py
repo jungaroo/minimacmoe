@@ -51,4 +51,9 @@ def move():
 
   return jsonify({"robot_move": robot_move})
 
+@app.route("/chat", methods=["POST"])
+def chat():
+  """Routing to receive chat """
+  print("got something")
+  return jsonify({"hi":"hi"})
 

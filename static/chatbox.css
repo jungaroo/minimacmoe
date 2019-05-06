@@ -1,0 +1,13 @@
+#chatbox {
+    background-color: white;
+}
+
+/* hiding overflows */
+
+.messages {
+    overflow-y: scroll;
+}
+
+.message {
+    padding: 5px 20px;
+}

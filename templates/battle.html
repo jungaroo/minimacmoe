@@ -6,8 +6,7 @@
       <img id="mmm-image" class="card-img-top" src="../static/img/minmacmoe/mmm1.PNG" alt="You can't beat me!">
       <div class="card-body">
         <h5 class="card-title">Minnie Mac Moe</h5>
-        <p id="trash-talk" class="card-text text-center">YOU CAN'T BEAT ME</p>
-        <button class="fight btn btn-danger">Fight me</button>
+        <!-- <p id="trash-talk" class="card-text text-center">YOU CAN'T BEAT ME</p> -->
         <a href="/" class="btn btn-info">Run Away</a>
       </div>
     </div>
@@ -32,8 +31,14 @@
           <div class="square"></div>
         </div>
       </div>
-  </div>
-  {% endblock %}
+      
+      <button class="restart btn btn-danger">Restart</button>
+    </div>
+{% endblock %}
+
+{% block chatbox %}
+{% include 'chatbox.html' %}
+{% endblock %}
 
 
 
