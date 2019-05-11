@@ -1,28 +1,28 @@
 $(function () {
 
   // Choose the images
-  const X_IMG = "../static/img/redx.svg.png"
-  const O_IMG = "../static/img/o.svg.png"
+  const X_IMG = "../static/img/redx.svg.png";
+  const O_IMG = "../static/img/o.svg.png";
   
   // Cache common buttons
   const $board = $("#board");
-  const $cardBody = $(".card-body");
   const $mmmImage = $("#mmm-image");
   const $trashTalk = $("#trash-talk");
   const $squares = $(".square");
-  const $chat = $("#chat");
+  const $chatForm = $("#chat-form");
+  const $chatMessages = $("#chat-messages");
 
   // Global positioning constants
   const [HUMAN, ROBOT] = ['X', 'O'];
+  let CHAT_MSG_COUNTER = 1;
 
-  let game = new TicTacToe(HUMAN, ROBOT);
+  const game = new TicTacToe(HUMAN, ROBOT);
 
   // Event listeners
   $("#game").on("click", ".restart", function(evt) {
     evt.preventDefault();
     window.location.reload();
   });
-      
 
 
   // Sending over a move to the server.
@@ -33,7 +33,7 @@ $(function () {
     if (!game.hasNotPlayed(idx) || game.gameOver) return;
 
     // Send the move to server, with the game history for validation
-    let response = await playToServer(idx, game.history)
+    let response = await playToServer(idx, game.history);
 
     if (response.robot_move !== undefined) {
 
@@ -55,7 +55,7 @@ $(function () {
   
   function checkWin() {
 
-    let winningPositions = game.checkForWin(ROBOT);
+    const winningPositions = game.checkForWin(ROBOT);
     if (winningPositions) {
       highlightWin(winningPositions);
       endGame();
@@ -68,7 +68,7 @@ $(function () {
   /** Updates the UI for play */
   function updateUIPlay(idx, player) {
 
-    let mark = (player === 'X') ? X_IMG || "../static/img/X.png" :  O_IMG || "../static/img/O.png";
+    const mark = (player === 'X') ? X_IMG || "../static/img/X.png" :  O_IMG || "../static/img/O.png";
     $board.children(`:nth-child(${idx + 1})`).html($(`<img style="height: 90px; width: 90px" src="${mark}">`));
 
     // Change 
@@ -77,18 +77,18 @@ $(function () {
   }
   
   function changeRobotImg() {
-    let n = Math.floor(Math.random() * 6);
+    const n = Math.floor(Math.random() * 6);
     $mmmImage.attr('src', `../static/img/minmacmoe/mmm${n}.PNG`);
   }
 
   /** Sends a play to server */
   async function playToServer(human_move, client_history) {
 
-    let data = {
+    const data = {
       human_move: human_move,
       client_history: JSON.stringify(client_history)
-    }
-    let response = await $.post('/move', data);
+    };
+    const response = await $.post('/move', data);
     return response;
   }
 
@@ -102,19 +102,33 @@ $(function () {
     // Find out win position
     for (let i of winningPositions) {
       $squares.eq(i)
-      .children(0)
-      .addClass("spinner-border")
-      .addClass("text-primary");
+        .children(0)
+        .addClass("spinner-border")
+        .addClass("text-primary");
     }
 
   }
 
-  $chat.on("submit", async function(evt) {
+  $chatForm.on("submit", async function(evt) {
     evt.preventDefault();
-    let text = $("#btn-input").val();
-    let computerReply = await $.post("/chat", {text});
-    console.log(computerReply);
+    
+    CHAT_MSG_COUNTER++;
+    CHAT_MSG_COUNTER %= 5;
+    if (CHAT_MSG_COUNTER === 0) $chatMessages.empty();
 
-  })
+    const $textField = $("#btn-input");
+    
+    const text = $textField.val();
+    const userText = $(`<li class=list-group-item"></li>`).text(`> ${text}`); // sanitize to prevent
+    $chatMessages.append(userText);
+    $textField.val('');
+
+    
+    const computerReply = await $.post("/chat", {text});
+    const { reply } = computerReply;
+    $chatMessages.append(`<li class="list-group-item-danger"><b>Mini:</b> ${reply} </li>`);
+    
+
+  });
 
 });

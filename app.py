@@ -3,12 +3,19 @@ from flask import redirect, url_for, flash
 from flask_debugtoolbar import DebugToolbarExtension
 
 from tictactoerobot import TicTacToeRobot
-from random import choice
+from chats import markov_chatter as mc
+from ratelimit import RateLimitException
 import json
 import os
+import sys
+
+
+# Add this entire directory in PYTHONPATH so we can freely use our code without worrying about relative imports
+sys.path.insert(1, os.path.join(sys.path[0], '.'))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "oh-super-secret")
+
 debug = DebugToolbarExtension(app)
 
 HUMAN = 'X'
@@ -54,6 +61,11 @@ def move():
 @app.route("/chat", methods=["POST"])
 def chat():
   """Routing to receive chat """
-  print("got something")
-  return jsonify({"hi":"hi"})
+  user_text = request.form['text']
+  # TODO: use user's text w/ sentiment analysis to choose which chain to use
+  try:
+    reply = mc.speak_nonsense(num_words=15)
+    return jsonify({ "reply": reply })
+  except RateLimitException:
+    return jsonify({ "reply": "Stop spamming me"})
 

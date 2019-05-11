@@ -21,7 +21,7 @@ class GameTree:
         tree._populate_game_tree(tree.root)
         return tree
 
-    @staticmethod  #
+    @staticmethod
     def _populate_game_tree(curr: 'GameNode'):
         """ Builds the entire game tree """
         if curr.player_won(ROBOT_O):

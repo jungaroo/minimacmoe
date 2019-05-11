@@ -4,7 +4,6 @@ import pickle
 
 PICKLE_FILE = "./tree_pickles/gametree_prune.obj"
 
-
 def minimax(node):
     """Minimax algorithm. Store both min and move for every level for two versions of the robot. """
     if node.score is not None:  # hit a leaf
@@ -12,8 +11,7 @@ def minimax(node):
     else:
         scores = [minimax(child) for child in node.children.values()]
 
-        min_score = min(scores)
-        max_score = max(scores)
+        min_score, max_score = min(scores), max(scores)
 
         moves = node.get_available_positions()
         node.min_move = moves[np.argmin(scores)]
