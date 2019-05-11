@@ -1,10 +1,22 @@
 import indicoio
-from config import INDICO_API_KEY
 import re
+import os
 from numpy.random import choice
 from ratelimit import limits
 
-indicoio.config.api_key = INDICO_API_KEY
+
+# Handle OS API_KEY
+if 'INDICO_API_KEY' not in os.environ:
+    try:
+        from config import INDICO_API_KEY
+        indicoio.config.api_key = INDICO_API_KEY
+    except ImportError:
+        print("Forgot to set the INDICO API KEY!")
+        indicoio.config.api_key = "DUMMY_KEY_THAT_WONT_WORK_AND_WILL_CRASH"
+else:
+    indicoio.config.api_key = os.environ.get('INDICO_API_KEY')
+
+
 ONE_HOUR = 3600
 
 class MarkovChatter:
