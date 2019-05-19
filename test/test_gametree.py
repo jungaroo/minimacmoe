@@ -1,8 +1,8 @@
 #! ./venv/bin/python
 
 import unittest
-from gametree import ROBOT_O, HUMAN_X
-from gametree import GameTree, GameNode
+from minimaxtree.gametree import ROBOT_O, HUMAN_X
+from minimaxtree.gametree import GameTree, GameNode
 
 
 class TestGameNodeMethods(unittest.TestCase):

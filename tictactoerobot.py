@@ -1,4 +1,4 @@
-from minimax import load_minimax_tree_from_pickle
+from setup_mmt import load_minimax_tree_from_pickle
 
 class TicTacToeRobot:
   """Class for the Robot that uses minimax algorithm. 

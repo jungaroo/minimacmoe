@@ -3,7 +3,7 @@ from flask import redirect, url_for, flash
 from flask_debugtoolbar import DebugToolbarExtension
 
 from tictactoerobot import TicTacToeRobot
-from chats import markov_chatter as mc
+from chats.chats import markov_chatter as mc
 from ratelimit import RateLimitException
 import json
 import os
@@ -28,6 +28,7 @@ def home():
   session["move_history"] = []
     
   return render_template("home.html")
+
 
 @app.route("/battle")
 def battle():
@@ -57,6 +58,7 @@ def move():
   session['move_history'] = robot.history
 
   return jsonify({"robot_move": robot_move})
+
 
 @app.route("/chat", methods=["POST"])
 def chat():

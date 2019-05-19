@@ -10,7 +10,7 @@ flask run
 ```
 Unit tests
 ```
-python3 -m unittest test_gametree.py
+python3 -m unittest discover
 ```
 
 # About

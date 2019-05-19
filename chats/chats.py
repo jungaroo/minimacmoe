@@ -49,7 +49,7 @@ class MarkovChatter:
 
         return chains
 
-    @limits(calls=10, period=10)
+    @limits(calls=5, period=5)
     def speak_nonsense(self, num_words=20):
         """ Uses markov chains to spit out a nonsense sentence """
 
