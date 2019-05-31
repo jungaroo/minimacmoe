@@ -3,11 +3,10 @@ $(function () {
   // Choose the images
   const X_IMG = "../static/img/redx.svg.png";
   const O_IMG = "../static/img/o.svg.png";
-  
+
   // Cache common buttons
   const $board = $("#board");
   const $mmmImage = $("#mmm-image");
-  const $trashTalk = $("#trash-talk");
   const $squares = $(".square");
   const $chatForm = $("#chat-form");
   const $chatMessages = $("#chat-messages");
@@ -16,10 +15,14 @@ $(function () {
   const [HUMAN, ROBOT] = ['X', 'O'];
   let CHAT_MSG_COUNTER = 1;
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const OPTION = urlParams.get('enemy');
+  if (OPTION === 'min') setMinRobotImage();
+
   const game = new TicTacToe(HUMAN, ROBOT);
 
   // Event listeners
-  $("#game").on("click", ".restart", function(evt) {
+  $("#game").on("click", ".restart", function (evt) {
     evt.preventDefault();
     window.location.reload();
   });
@@ -33,7 +36,7 @@ $(function () {
     if (!game.hasNotPlayed(idx) || game.gameOver) return;
 
     // Send the move to server, with the game history for validation
-    let response = await playToServer(idx, game.history);
+    let response = await playToServer(idx, game.history, OPTION);
 
     if (response.robot_move !== undefined) {
 
@@ -52,7 +55,7 @@ $(function () {
     checkWin();
 
   });
-  
+
   function checkWin() {
 
     const winningPositions = game.checkForWin(ROBOT);
@@ -62,31 +65,44 @@ $(function () {
     } else if (game.isTied()) {
       endGame();
     }
-    
+
   }
 
   /** Updates the UI for play */
   function updateUIPlay(idx, player) {
 
-    const mark = (player === 'X') ? X_IMG || "../static/img/X.png" :  O_IMG || "../static/img/O.png";
-    $board.children(`:nth-child(${idx + 1})`).html($(`<img style="height: 90px; width: 90px" src="${mark}">`));
+    const mark = (player === 'X') ? X_IMG || "../static/img/X.png" : O_IMG || "../static/img/O.png";
+    $board
+      .children(`:nth-child(${idx + 1})`)
+      .html($(`<img style="height: 90px; width: 90px" src="${mark}">`));
 
     // Change 
-    if (player === 'X') changeRobotImg();
-    
+    if (OPTION === 'max' && player === 'X') changeRobotImg();
+
+  }
+
+  function setMinRobotImage() {
+    $mmmImage.attr('src', '../static/img/echo1.jpg');
   }
   
   function changeRobotImg() {
-    const n = Math.floor(Math.random() * 6);
-    $mmmImage.attr('src', `../static/img/minmacmoe/mmm${n}.PNG`);
+    if (OPTION === "max") {
+      const n = Math.floor(Math.random() * 6);
+      $mmmImage.attr('src', `../static/img/minmacmoe/mmm${n}.PNG`);
+    } else {
+      const i = Math.floor(Math.random() * 2);
+      $mmmImage.attr('src', `../static/img/echo${i}.jpg`);
+    }
+
   }
 
   /** Sends a play to server */
-  async function playToServer(human_move, client_history) {
+  async function playToServer(human_move, client_history, option) {
 
     const data = {
-      human_move: human_move,
-      client_history: JSON.stringify(client_history)
+      human_move,
+      client_history: JSON.stringify(client_history),
+      option
     };
     const response = await $.post('/move', data);
     return response;
@@ -94,7 +110,6 @@ $(function () {
 
   function endGame() {
     $mmmImage.attr('src', `../static/img/minmacmoe/loser.PNG`);
-    $trashTalk.text(RANDOM_MESSAGES[7]);
     game.gameOver = true;
   }
 
@@ -109,25 +124,25 @@ $(function () {
 
   }
 
-  $chatForm.on("submit", async function(evt) {
+  $chatForm.on("submit", async function (evt) {
     evt.preventDefault();
-    
+
     CHAT_MSG_COUNTER++;
     CHAT_MSG_COUNTER %= 5;
     if (CHAT_MSG_COUNTER === 0) $chatMessages.empty();
 
     const $textField = $("#btn-input");
-    
+
     const text = $textField.val();
     const userText = $(`<li class=list-group-item"></li>`).text(`> ${text}`); // sanitize to prevent
     $chatMessages.append(userText);
     $textField.val('');
 
-    
-    const computerReply = await $.post("/chat", {text});
+
+    const computerReply = await $.post("/chat", { text });
     const { reply } = computerReply;
     $chatMessages.append(`<li class="list-group-item-danger"><b>Mini:</b> ${reply} </li>`);
-    
+
 
   });
 

@@ -47,6 +47,7 @@ def move():
 
   # Grab data from the request forms
   human_move = int(request.form['human_move'])
+  option = request.form['option'] # Grabs whether to play 'max' or 'min'
   client_history = json.loads(request.form['client_history'])
 
   # If the client opened multiple tabs or is trying to cheat through the client
@@ -54,10 +55,13 @@ def move():
     return jsonify({"error": "invalid"})
 
   # Create the robot's move, and update the history
-  robot_move = robot.get_robots_move(human_move)
+  robot_move = robot.get_robots_move(human_move, option)
   session['move_history'] = robot.history
 
-  return jsonify({"robot_move": robot_move})
+  if robot_move is not None:
+    return jsonify({"robot_move": robot_move})
+  else:
+    return jsonify({"end_game": "tie"})
 
 
 @app.route("/chat", methods=["POST"])

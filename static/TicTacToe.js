@@ -1,7 +1,7 @@
 
 /** Class to represent the Tic Tac Toe game state. **/
 class TicTacToe {
-   
+
   /** Constructs the TicTacToe board, a 1D array with its elements as indice as available spots.
     * @params
     * human : string ('X' or 'O')
@@ -10,19 +10,20 @@ class TicTacToe {
   constructor(human, robot) {
     this.board = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // Indices of the 3x3 
     this.history = [] // history of the game
-    
+
     // Strings for the symbols for human and count
-    this.human = human; 
+    this.human = human;
     this.robot = robot;
 
     // Count for ties
     this.turnCount = 0;
 
+    // Is ended:
+    this.gameOver = false;
+    
     this.checkForWin = this.checkForWin.bind(this);
     this.isTied = this.isTied.bind(this);
 
-    // Is ended:
-    this.gameOver = false;
   }
 
   /** Returns whether or not someone has played at this position.
@@ -50,17 +51,19 @@ class TicTacToe {
    */
   checkForWin(winner) {
 
-    let winPositions = [[0,1,2], [3,4,5], [6,7,8],  // row wins
-                        [0,3,6], [1,4,7], [2,5,8],  // column wins
-                        [0,4,8], [2,4,6]] // diagonal wins
-    
+    let winPositions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],  // row wins
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],  // column wins
+      [0, 4, 8], [2, 4, 6]              // diagonal wins
+    ];
+
     for (let positions of winPositions) {
       if (positions.every((i) => this.board[i] === winner)) {
         return positions;
       }
     }
     return false;
-  
+
   }
 
   isTied() {
@@ -68,7 +71,7 @@ class TicTacToe {
   }
 
   getAvailable() {
-    let avails = this.board.filter((item)=>!isNaN(item));
+    let avails = this.board.filter((item) => !isNaN(item));
     return avails;
   }
 

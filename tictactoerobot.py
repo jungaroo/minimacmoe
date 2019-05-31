@@ -14,12 +14,14 @@ class TicTacToeRobot:
     self.history = history
   
   
-  def get_robots_move(self, human_move: int):
+  def get_robots_move(self, human_move: int, option="max"):
     """Takes in human_move (int), and returns robots corresponding move"""
     
     self.history.append(human_move)
     curr_node = self.traverse()
-    robot_move = curr_node.max_move
+
+    robot_move = curr_node.max_move if option == "max" else curr_node.min_move
+
     self.history.append(robot_move)
     return robot_move
       
@@ -35,14 +37,3 @@ class TicTacToeRobot:
 
   def is_valid_history(self, client_history):
     return self.history == client_history
-
-
-
-
-
-
-
-
-
-
-
