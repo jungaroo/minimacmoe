@@ -1,7 +1,8 @@
 # Mini Mac Moe
-Combination of Tic Tac Toe and minimax.
+Combination of Tic Tac Toe and minimax. The "chat" thing is just a randomly generated [Markov Text Chain](https://en.wikipedia.org/wiki/Markov_chain)
 
-Deployment: minimacmoe.herokuapp.com/
+Deployment:
+https://minimacmoe.herokuapp.com/battle
 
 # To develop/test
 ```
