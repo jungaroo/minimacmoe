@@ -9,6 +9,8 @@ import json
 import os
 import sys
 
+import datetime
+
 
 # Add this entire directory in PYTHONPATH so we can freely use our code without worrying about relative imports
 sys.path.insert(1, os.path.join(sys.path[0], '.'))
@@ -74,4 +76,12 @@ def chat():
     return jsonify({ "reply": reply })
   except RateLimitException:
     return jsonify({ "reply": "Stop spamming me"})
+
+  
+@app.route("/test", methods=["POST"])
+def get_stuff():
+  print("*" * 50)
+  print("Received:", datetime.datetime.now() , request.json)
+  print("*" * 50)
+  return "hi"
 
